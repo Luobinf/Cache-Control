@@ -170,16 +170,17 @@ var server = http.createServer(function(request, response){
     let fileMd5 = md5(string)
     response.setHeader('Content-Type', 'text/javascript;charset=utf-8')
     response.setHeader('ETag',fileMd5)
+    // response.setHeader('Last-Modified',"Fri, 10 Jan 2020 01:19:17 GMT")
     // console.log(request.headers)
     console.log(`if-none-match`)
     console.log(request.headers['if-none-match'])
     console.log(`fileMd5`)
     console.log(fileMd5)
-    if(request.headers['if-none-match'] === fileMd5){
-      response.statusCode = 304  //返回304，告诉浏览器直接使用缓存内容就行，该缓存内容仍然是新鲜的
-    }else{
+    if(request.headers['if-none-match'] !== fileMd5){
       response.statusCode = 200
       response.write(string)
+    }else{
+      response.statusCode = 304  //返回304，告诉浏览器直接使用缓存内容就行，该缓存内容仍然是新鲜的
     }
     response.end()
   }else if(path==='/main.css'){
@@ -187,8 +188,8 @@ var server = http.createServer(function(request, response){
     response.setHeader('Content-Type', 'text/css;charset=utf-8')
     response.statusCode = 200
     // max-age字段为最大缓存周期
-    // response.setHeader('Cache-Control','max-age=31536000')   //注意缓存与ETag的区别
-    response.setHeader('Expires','Fri, 13 Dec 2019 11:07:50 GMT')  //Expires什么时候过期指的是用户本地的时间，万一用户本地时间发生了错乱，就会出现问题，不靠谱。
+    response.setHeader('Cache-Control','max-age=3156000')   //注意缓存与ETag的区别
+    // response.setHeader('Expires','Fri, 13 Dec 2019 11:07:50 GMT')  //Expires什么时候过期：按照的是用户本地的时间与所设置的时间相比较，万一用户本地时间发生了错乱，就会出现问题，不靠谱。
     response.write(string)
     response.end()
   }else{
